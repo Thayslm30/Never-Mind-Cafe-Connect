@@ -1,0 +1,179 @@
+[
+    {
+        "id": "1112fc01b007951b",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1e8d2a97271efee3",
+        "type": "http in",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "url": "/home",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 290,
+        "y": 200,
+        "wires": [
+            [
+                "847e3215873d6187"
+            ]
+        ]
+    },
+    {
+        "id": "213bdd949126098e",
+        "type": "http response",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 650,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "847e3215873d6187",
+        "type": "template",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Never Mind Cafe Voice Assistant</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-image: url('https://daoinsights.com/wp-content/uploads/2024/04/never-cover-scaled.jpg');\n      background-size: cover;\n      background-repeat: no-repeat;\n      background-position: center;\n      background-attachment: fixed;\n      font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;\n      color: #5D4C79;\n    }\n\n    .content-wrapper {\n      height: 100vh;\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      flex-direction: column;\n      background-color: rgba(255, 255, 255, 0.2);\n      padding: 20px;\n    }\n\n    .input-area {\n      background-color: rgba(255, 255, 255, 0.9);\n      border-radius: 20px;\n      padding: 20px 30px;\n      box-shadow: 0 4px 10px rgba(0,0,0,0.1);\n      display: flex;\n      flex-direction: column;\n      gap: 15px;\n      align-items: center;\n    }\n\n    input[type=\"text\"] {\n      width: 300px;\n      padding: 10px;\n      border: 2px solid #FFCEDF;\n      border-radius: 10px;\n      font-size: 16px;\n    }\n\n    button {\n      background-color: #FFCEDF;\n      border: none;\n      border-radius: 10px;\n      padding: 10px 20px;\n      font-size: 16px;\n      color: #5D4C79;\n      cursor: pointer;\n    }\n\n    button:hover {\n      background-color: #FFF6BD;\n    }\n\n    #replyBox {\n      margin-top: 20px;\n      display: flex;\n      flex-wrap: wrap;\n      justify-content: center;\n      gap: 10px;\n    }\n\n    #replyBox button {\n      background: #FFF6BD;\n      border-radius: 10px;\n      padding: 8px 14px;\n      border: none;\n      cursor: pointer;\n    }\n\n    .lang-toggle {\n      position: absolute;\n      top: 10px;\n      right: 20px;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"lang-toggle\">\n    <button onclick=\"toggleLanguage()\">🌐 中文 / English</button>\n  </div>\n\n  <div class=\"content-wrapper\">\n    <div class=\"input-area\">\n      <input type=\"text\" id=\"textInput\" required />\n      <button id=\"sendBtn\" onclick=\"handleSend()\"></button>\n      <button id=\"speakBtn\" type=\"button\" onclick=\"startRecognition()\"></button>\n\n    </div>\n    <div id=\"replyBox\"></div>\n    <p id=\"confirmationMessage\" style=\"margin-top: 20px; font-size: 16px; color: #ffffff;\"></p>\n  </div>\n\n<script>\n  const urlParams = new URLSearchParams(window.location.search);\n  const lang = urlParams.get(\"lang\") || \"zh\";\n\n  function toggleLanguage() {\n    const newLang = lang === \"zh\" ? \"en\" : \"zh\";\n    urlParams.set(\"lang\", newLang);\n    window.location.search = urlParams.toString();\n  }\n\n  const responsePatterns = [\n    {\n      keywords: [\"coffee\", \"咖啡\"],\n      replies: {\n        en: [\"What size would you like?\", \"Hot or iced?\", \"With milk?\", \"Do you want sugar?\"],\n        zh: [\"请问您要多大杯？\", \"热的还是冰的？\", \"要加牛奶吗？\", \"需要加糖吗？\"]\n      }\n    },\n    {\n      keywords: [\"latte\", \"拿铁\"],\n      replies: {\n        en: [\"Large or small?\", \"Is oat milk okay?\", \"Add syrup?\", \"Single or double shot?\"],\n        zh: [\"您要大杯还是小杯？\", \"加燕麦奶可以吗？\", \"加糖浆吗？\", \"双份浓缩？\"]\n      }\n    },\n    {\n      keywords: [\"americano\", \"美式\"],\n      replies: {\n        en: [\"Hot or iced?\", \"Would you like milk?\", \"Do you want it sweet?\", \"Decaf version?\"],\n        zh: [\"冰的还是热的？\", \"需要加奶吗？\", \"要甜吗？\", \"想尝试低因吗？\"]\n      }\n    },\n    {\n      keywords: [\"cappuccino\", \"卡布奇诺\"],\n      replies: {\n        en: [\"Foamy or less foam?\", \"Do you like it hot?\", \"Sugar?\", \"Double espresso?\"],\n        zh: [\"您喜欢多泡还是少泡？\", \"热的可以吗？\", \"需要加糖吗？\", \"双份浓缩？\"]\n      }\n    },\n    {\n      keywords: [\"small\", \"medium\", \"large\", \"big\", \"小杯\", \"中杯\", \"大杯\"],\n      replies: {\n        en: [\"Small it is!\", \"Would you like milk?\", \"Hot or iced?\", \"Sweetened or not?\"],\n        zh: [\"好的，小杯～\", \"需要加牛奶吗？\", \"热饮可以吗？\", \"需要加糖吗？\"]\n      }\n    },\n    {\n      keywords: [\"hot\", \"warm\", \"iced\", \"cold\", \"热\", \"温\", \"冰\", \"冷\"],\n      replies: {\n        en: [\"One hot drink coming up!\", \"With sugar?\", \"Add milk?\", \"Would you like it strong?\"],\n        zh: [\"一杯热饮～\", \"要加糖吗？\", \"加奶吗？\", \"要不要浓一点的？\"]\n      }\n    },\n    {\n      keywords: [\"yes\", \"yeah\", \"sure\", \"ok\", \"是的\", \"好的\", \"可以\", \"要\"],\n      replies: {\n        en: [\"Okay!\", \"Anything else?\", \"Got it!\", \"We'll prepare that for you.\"],\n        zh: [\"好的～\", \"还有别的吗？\", \"稍等一下哦～\", \"马上为您准备～\"]\n      }\n    },\n    {\n      keywords: [\"no\", \"nah\", \"not really\", \"不要\", \"不是\", \"不用\", \"不需要\"],\n      replies: {\n        en: [\"Understood!\", \"Anything else?\", \"Thank you!\", \"Would you like something else?\"],\n        zh: [\"明白～\", \"还有别的吗？\", \"谢谢您～\", \"要点别的吗？\"]\n      }\n    },\n    {\n      keywords: [\"how are you\", \"you good\", \"今天怎么样\", \"你好吗\", \"最近好吗\"],\n      replies: {\n        en: [\"I'm great, thank you!\", \"Just brewing happiness!\", \"And you?\", \"Lovely to see you!\"],\n        zh: [\"我很好，谢谢～\", \"今天很开心～\", \"你呢？\", \"需要咖啡提神吗？\"]\n      }\n    },\n    {\n      keywords: [\"milk\", \"sugar\", \"牛奶\", \"糖\"],\n      replies: {\n        en: [\"Would you like milk?\", \"Sugar added?\", \"Oat or soy milk?\", \"Sweet or unsweetened?\"],\n        zh: [\"要加牛奶吗？\", \"需要加糖吗？\", \"想试试燕麦奶吗？\", \"甜一点好吗？\"]\n      }\n    },\n    {\n      keywords: [\"decaf\", \"espresso\", \"低因\", \"浓缩\"],\n      replies: {\n        en: [\"Decaf or full caffeine?\", \"One espresso shot?\", \"How strong do you want it?\", \"Double shot?\"],\n        zh: [\"低因还是普通的？\", \"一份浓缩可以吗？\", \"需要多浓？\", \"要双份浓缩吗？\"]\n      }\n    },\n    {\n      keywords: [\"thanks\", \"谢谢\"],\n      replies: {\n        en: [\"You're welcome!\", \"Have a great day!\", \"Come again!\", \"Happy to help!\"],\n        zh: [\"不客气～\", \"祝您有美好的一天！\", \"下次见！\", \"很高兴为您服务～\"]\n      }\n    },\n    {\n      keywords: [\"hello\", \"hi\", \"你好\", \"您好\"],\n      replies: {\n        en: [\"Hello!\", \"Welcome!\", \"Would you like a drink?\", \"Want a recommendation?\"],\n        zh: [\"你好呀～\", \"欢迎光临！\", \"想喝点什么？\", \"需要我推荐吗？\"]\n      }\n    },\n    {\n      keywords: [\"bye\", \"goodbye\", \"再见\"],\n      replies: {\n        en: [\"See you next time!\", \"Take care!\", \"Bye bye!\", \"Thanks for coming!\"],\n        zh: [\"欢迎下次再来～\", \"再见啦～\", \"祝您一天愉快！\", \"保重～\"]\n      }\n    }\n  ];\n\n  function showSmartReplies(transcript) {\n    const replyBox = document.getElementById(\"replyBox\");\n    replyBox.innerHTML = \"\";\n\n    const normalized = transcript.trim().toLowerCase();\n    let replies = [];\n\n    for (const pattern of responsePatterns) {\n      for (const keyword of pattern.keywords) {\n        if (normalized.includes(keyword.toLowerCase())) {\n          replies = pattern.replies[lang] || pattern.replies[\"en\"];\n          break;\n        }\n      }\n      if (replies.length > 0) break;\n    }\n\n    if (replies.length === 0) {\n      replies = lang === \"zh\"\n        ? [\"抱歉，我不太明白您的意思～\", \"可以再说一遍吗？\", \"您能换个方式表达吗？\", \"请用简短的词语试试～\"]\n        : [\"Sorry, I didn’t quite understand.\", \"Can you say that again?\", \"Try saying it differently.\", \"Use simpler words, please.\"];\n    }\n\n    replies.forEach(reply => {\n      const btn = document.createElement(\"button\");\n      btn.textContent = reply;\n      btn.onclick = () => alert(\"Barista selected: \" + reply);\n      replyBox.appendChild(btn);\n    });\n  }\n\n  function handleSend() {\n    const text = document.getElementById(\"textInput\").value;\n    if (!text) return;\n\n    const encoded = encodeURIComponent(text);\n    window.location.href = `/response?text=${encoded}&lang=${lang}`;\n\n    const confirmation = document.getElementById(\"confirmationMessage\");\n    confirmation.textContent = lang === \"zh\"\n      ? \"☕️ 已发送！正在跳转回应页面...\"\n      : \"☕️ Sent! Redirecting to response page...\";\n\n    setTimeout(() => {\n      confirmation.textContent = \"\";\n    }, 4000);\n  }\n\n  function startRecognition() {\n    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;\n    if (!SpeechRecognition) {\n      alert(lang === \"zh\" ? \"你的浏览器不支持语音识别！\" : \"Your browser does not support speech recognition.\");\n      return;\n    }\n\n    const recognition = new SpeechRecognition();\n    recognition.lang = lang === \"zh\" ? \"zh-CN\" : \"en-US\";\n    recognition.interimResults = false;\n    recognition.maxAlternatives = 1;\n\n    recognition.onresult = function(event) {\n      const transcript = event.results[0][0].transcript;\n      document.getElementById(\"textInput\").value = transcript;\n   \n    };\n\n    recognition.onerror = function(event) {\n      console.error(\"Speech recognition error:\", event.error);\n    };\n\n    recognition.start();\n  }\n  window.onload = () => {\n    // Localize UI elements\n    document.getElementById(\"textInput\").placeholder = lang === \"zh\" ? \"说点什么吧~\" : \"Say something~\";\n    document.getElementById(\"sendBtn\").textContent = lang === \"zh\" ? \"发送\" : \"Send\";\n    document.getElementById(\"speakBtn\").textContent = lang === \"zh\" ? \"🎤 点我说话\" : \"🎤 Tap to Speak\";\n  };\n</script>\n</body>\n</html>\n",
+        "output": "str",
+        "x": 480,
+        "y": 200,
+        "wires": [
+            [
+                "213bdd949126098e"
+            ]
+        ]
+    },
+    {
+        "id": "c0e2a8892625fced",
+        "type": "http in",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "url": "/submit",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 270,
+        "y": 280,
+        "wires": [
+            [
+                "8f524870a58d4b9f"
+            ]
+        ]
+    },
+    {
+        "id": "8f524870a58d4b9f",
+        "type": "http response",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 470,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "d4ce286d96eb81fd",
+        "type": "http in",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "url": "/response",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 280,
+        "y": 340,
+        "wires": [
+            [
+                "c0812e44c78b5e52"
+            ]
+        ]
+    },
+    {
+        "id": "c0812e44c78b5e52",
+        "type": "function",
+        "z": "1112fc01b007951b",
+        "name": "function 4",
+        "func": "const text = msg.req.query.text || \"\";\nconst lang = msg.req.query.lang || \"zh\";\nmsg.headers = { 'Content-Type': 'text/html' };\n\nmsg.payload = `\n<!DOCTYPE html>\n<html lang=\"${lang === \"zh\" ? \"zh-CN\" : \"en\"}\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>${lang === \"zh\" ? \"回应选项\" : \"Suggested Replies\"}</title>\n  <style>\n    body {\n      font-family: \"Noto Sans SC\", Arial, sans-serif;\n      margin: 0;\n      padding: 0;\n      background-image: url('https://daoinsights.com/wp-content/uploads/2024/04/never-cover-scaled.jpg');\n      background-size: cover;\n      background-repeat: no-repeat;\n      background-position: center;\n      background-attachment: fixed;\n      color: #333;\n      text-align: center;\n      padding: 40px 20px;\n    }\n\n    .text-header {\n      background-color: rgba(255, 255, 255, 0.85);\n      display: inline-block;\n      padding: 12px 24px;\n      border-radius: 16px;\n      font-size: 24px;\n      font-weight: bold;\n      margin-bottom: 20px;\n      box-shadow: 0 4px 8px rgba(0,0,0,0.2);\n    }\n\n    .user-text {\n      font-size: 22px;\n      background-color: rgba(255, 255, 255, 0.85);\n      display: inline-block;\n      padding: 10px 20px;\n      border-radius: 12px;\n      margin-bottom: 30px;\n      box-shadow: 0 4px 8px rgba(0,0,0,0.1);\n    }\n\n    .reply-btn {\n      display: inline-block;\n      margin: 12px;\n      padding: 16px 32px;\n      background-color: rgba(255, 246, 189, 0.95);\n      border: none;\n      border-radius: 16px;\n      font-size: 20px;\n      font-weight: 500;\n      cursor: pointer;\n      box-shadow: 0 4px 6px rgba(0,0,0,0.15);\n      transition: transform 0.2s ease, background-color 0.2s ease;\n    }\n\n    .reply-btn:hover {\n      background-color: #ffeb80;\n      transform: scale(1.05);\n    }\n\n    #replyBox {\n      margin-top: 20px;\n    }\n\n    .lang-toggle, .home-button {\n      position: absolute;\n      top: 10px;\n    }\n\n    .lang-toggle {\n      right: 20px;\n    }\n\n    .home-button {\n      left: 20px;\n    }\n\n    .lang-toggle button,\n    .home-button button {\n      padding: 8px 16px;\n      border-radius: 10px;\n      background-color: #FFCEDF;\n      border: none;\n      font-size: 16px;\n      cursor: pointer;\n    }\n\n    .lang-toggle button:hover,\n    .home-button button:hover {\n      background-color: #FFF6BD;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"home-button\">\n    <a href=\"/home?lang=${lang}\">\n      <button>⬅ ${lang === \"zh\" ? \"返回首页\" : \"Back to Home\"}</button>\n    </a>\n  </div>\n\n  <div class=\"lang-toggle\">\n    <button onclick=\"toggleLanguage()\">🌐 ${lang === \"zh\" ? \"English\" : \"中文\"}</button>\n  </div>\n\n  <div class=\"text-header\">🧋 ${lang === \"zh\" ? \"客户说：\" : \"Customer Said:\"}</div><br>\n  <div class=\"user-text\">${text}</div>\n\n  <div class=\"text-header\" style=\"margin-top: 40px;\">✨ ${lang === \"zh\" ? \"建议回复：\" : \"Suggested Replies:\"}</div><br>\n  <div id=\"replyBox\"></div>\n\n  <script>\n    const transcript = ${JSON.stringify(text)};\n    const lang = \"${lang}\";\n\n    function toggleLanguage() {\n      const url = new URL(window.location.href);\n      const newLang = lang === \"zh\" ? \"en\" : \"zh\";\n      url.searchParams.set(\"lang\", newLang);\n      window.location.href = url.toString();\n    }\n\n    const responsePatterns = [\n      {\n        keywords: [\"coffee\", \"咖啡\"],\n        replies: {\n          en: [\"What size would you like?\", \"Hot or iced?\", \"With milk?\", \"Do you want sugar?\"],\n          zh: [\"请问您要多大杯？\", \"热的还是冰的？\", \"要加牛奶吗？\", \"需要加糖吗？\"]\n        }\n      },\n      {\n        keywords: [\"latte\", \"拿铁\"],\n        replies: {\n          en: [\"Large or small?\", \"Is oat milk okay?\", \"Add syrup?\", \"Single or double shot?\"],\n          zh: [\"您要大杯还是小杯？\", \"加燕麦奶可以吗？\", \"加糖浆吗？\", \"双份浓缩？\"]\n        }\n      },\n      {\n        keywords: [\"americano\", \"美式\"],\n        replies: {\n          en: [\"Hot or iced?\", \"Would you like milk?\", \"Do you want it sweet?\", \"Decaf version?\"],\n          zh: [\"冰的还是热的？\", \"需要加奶吗？\", \"要甜吗？\", \"想尝试低因吗？\"]\n        }\n      },\n      {\n        keywords: [\"cappuccino\", \"卡布奇诺\"],\n        replies: {\n          en: [\"Foamy or less foam?\", \"Do you like it hot?\", \"Sugar?\", \"Double espresso?\"],\n          zh: [\"您喜欢多泡还是少泡？\", \"热的可以吗？\", \"需要加糖吗？\", \"双份浓缩？\"]\n        }\n      },\n      {\n        keywords: [\"small\", \"medium\", \"large\", \"big\", \"小杯\", \"中杯\", \"大杯\"],\n        replies: {\n          en: [\"Small it is!\", \"Would you like milk?\", \"Hot or iced?\", \"Sweetened or not?\"],\n          zh: [\"好的，小杯～\", \"需要加牛奶吗？\", \"热饮可以吗？\", \"需要加糖吗？\"]\n        }\n      },\n      {\n        keywords: [\"hot\", \"warm\", \"iced\", \"cold\", \"热\", \"温\", \"冰\", \"冷\"],\n        replies: {\n          en: [\"One hot drink coming up!\", \"With sugar?\", \"Add milk?\", \"Would you like it strong?\"],\n          zh: [\"一杯热饮～\", \"要加糖吗？\", \"加奶吗？\", \"要不要浓一点的？\"]\n        }\n      },\n      {\n        keywords: [\"yes\", \"yeah\", \"sure\", \"ok\", \"是的\", \"好的\", \"可以\", \"要\"],\n        replies: {\n          en: [\"Okay!\", \"Anything else?\", \"Got it!\", \"We'll prepare that for you.\"],\n          zh: [\"好的～\", \"还有别的吗？\", \"稍等一下哦～\", \"马上为您准备～\"]\n        }\n      },\n      {\n        keywords: [\"no\", \"nah\", \"not really\", \"不要\", \"不是\", \"不用\", \"不需要\"],\n        replies: {\n          en: [\"Understood!\", \"Anything else?\", \"Thank you!\", \"Would you like something else?\"],\n          zh: [\"明白～\", \"还有别的吗？\", \"谢谢您～\", \"要点别的吗？\"]\n        }\n      },\n      {\n        keywords: [\"how are you\", \"you good\", \"今天怎么样\", \"你好吗\", \"最近好吗\"],\n        replies: {\n          en: [\"I'm great, thank you!\", \"Just brewing happiness!\", \"And you?\", \"Lovely to see you!\"],\n          zh: [\"我很好，谢谢～\", \"今天很开心～\", \"你呢？\", \"需要咖啡提神吗？\"]\n        }\n      },\n      {\n        keywords: [\"milk\", \"sugar\", \"牛奶\", \"糖\"],\n        replies: {\n          en: [\"Would you like milk?\", \"Sugar added?\", \"Oat or soy milk?\", \"Sweet or unsweetened?\"],\n          zh: [\"要加牛奶吗？\", \"需要加糖吗？\", \"想试试燕麦奶吗？\", \"甜一点好吗？\"]\n        }\n      },\n      {\n        keywords: [\"decaf\", \"espresso\", \"低因\", \"浓缩\"],\n        replies: {\n          en: [\"Decaf or full caffeine?\", \"One espresso shot?\", \"How strong do you want it?\", \"Double shot?\"],\n          zh: [\"低因还是普通的？\", \"一份浓缩可以吗？\", \"需要多浓？\", \"要双份浓缩吗？\"]\n        }\n      },\n      {\n        keywords: [\"thank\",\"谢谢\"],\n        replies: {\n          en: [\"You're welcome!\", \"Have a great day!\", \"Come again!\", \"Happy to help!\"],\n          zh: [\"不客气～\", \"祝您有美好的一天！\", \"下次见！\", \"很高兴为您服务～\"]\n        }\n      },\n      {\n        keywords: [\"hello\", \"hi\", \"你好\", \"您好\"],\n        replies: {\n          en: [\"Hello!\", \"Welcome!\", \"Would you like a drink?\", \"Want a recommendation?\"],\n          zh: [\"你好呀～\", \"欢迎光临！\", \"想喝点什么？\", \"需要我推荐吗？\"]\n        }\n      },\n      {\n        keywords: [\"bye\", \"goodbye\", \"再见\"],\n        replies: {\n          en: [\"See you next time!\", \"Take care!\", \"Bye bye!\", \"Thanks for coming!\"],\n          zh: [\"欢迎下次再来～\", \"再见啦～\", \"祝您一天愉快！\", \"保重～\"]\n        }\n      }\n    ];\n\n    function showSmartReplies(transcript) {\n      const replyBox = document.getElementById(\"replyBox\");\n      replyBox.innerHTML = \"\";\n\n      const normalized = transcript.trim().toLowerCase();\n      let replies = [];\n\n      for (const pattern of responsePatterns) {\n        for (const keyword of pattern.keywords) {\n          if (normalized.includes(keyword.toLowerCase())) {\n            replies = pattern.replies[lang] || pattern.replies[\"en\"];\n            break;\n          }\n        }\n        if (replies.length > 0) break;\n      }\n\n      if (replies.length === 0) {\n        replies = lang === \"zh\"\n          ? [\"抱歉，我不太明白您的意思～\", \"可以再说一遍吗？\", \"您能换个方式表达吗？\", \"请用简短的词语试试～\"]\n          : [\"Sorry, I didn’t quite understand.\", \"Can you say that again?\", \"Try saying it differently.\", \"Use simpler words, please.\"];\n      }\n\n      replies.forEach(reply => {\n        const btn = document.createElement(\"button\");\n        btn.className = \"reply-btn\";\n        btn.textContent = reply;\n        btn.onclick = () => {\n          window.location.href = '/reply?reply=' + encodeURIComponent(reply) + '&lang=' + lang;\n        };\n        replyBox.appendChild(btn);\n      });\n    }\n\n    window.onload = () => showSmartReplies(transcript);\n  </script>\n</body>\n</html>\n`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 340,
+        "wires": [
+            [
+                "1bfb48d1713d965f"
+            ]
+        ]
+    },
+    {
+        "id": "1bfb48d1713d965f",
+        "type": "http response",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 630,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "421ac31c618dfeeb",
+        "type": "http in",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "url": "/reply",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 260,
+        "y": 420,
+        "wires": [
+            [
+                "ebc79c1bcb83d444"
+            ]
+        ]
+    },
+    {
+        "id": "c16a99b009119036",
+        "type": "http response",
+        "z": "1112fc01b007951b",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 610,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "ebc79c1bcb83d444",
+        "type": "function",
+        "z": "1112fc01b007951b",
+        "name": "function 5",
+        "func": "const reply = msg.req.query.reply || \"😊\";\nconst lang = msg.req.query.lang || \"zh\";\nmsg.headers = { 'Content-Type': 'text/html' };\n\nmsg.payload = `\n<html lang=\"${lang === \"zh\" ? \"zh-CN\" : \"en\"}\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>${lang === \"zh\" ? \"客户回应\" : \"Customer Reply\"}</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-image: url('https://daoinsights.com/wp-content/uploads/2024/04/never-cover-scaled.jpg');\n      background-size: cover;\n      background-repeat: no-repeat;\n      background-position: center;\n      background-attachment: fixed;\n      font-family: \"Noto Sans SC\", Arial, sans-serif;\n      text-align: center;\n      color: #333;\n      padding-top: 80px;\n    }\n\n    .reply-display {\n      font-size: 36px;\n      font-weight: bold;\n      background-color: rgba(255, 255, 255, 0.9);\n      display: inline-block;\n      padding: 20px 30px;\n      border-radius: 20px;\n      margin-bottom: 40px;\n      box-shadow: 0 4px 12px rgba(0,0,0,0.2);\n    }\n\n    .input-area {\n      background-color: rgba(255, 255, 255, 0.95);\n      border-radius: 20px;\n      padding: 20px 30px;\n      display: inline-block;\n      box-shadow: 0 4px 10px rgba(0,0,0,0.1);\n    }\n\n    input[type=\"text\"] {\n      width: 300px;\n      padding: 10px;\n      border: 2px solid #FFCEDF;\n      border-radius: 10px;\n      font-size: 16px;\n      margin-bottom: 12px;\n    }\n\n    button {\n      background-color: #FFCEDF;\n      border: none;\n      border-radius: 10px;\n      padding: 10px 20px;\n      font-size: 16px;\n      color: #5D4C79;\n      cursor: pointer;\n      margin: 5px;\n    }\n\n    button:hover {\n      background-color: #FFF6BD;\n    }\n\n    .lang-toggle, .home-button {\n      position: absolute;\n      top: 10px;\n    }\n\n    .lang-toggle {\n      right: 20px;\n    }\n\n    .home-button {\n      left: 20px;\n    }\n\n    .lang-toggle button,\n    .home-button button {\n      padding: 8px 16px;\n      border-radius: 10px;\n      background-color: #FFCEDF;\n      border: none;\n      font-size: 16px;\n      cursor: pointer;\n    }\n\n    .lang-toggle button:hover,\n    .home-button button:hover {\n      background-color: #FFF6BD;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"home-button\">\n    <a href=\"/home?lang=${lang}\">\n      <button>⬅ ${lang === \"zh\" ? \"返回首页\" : \"Back to Home\"}</button>\n    </a>\n  </div>\n\n  <div class=\"lang-toggle\">\n    <button onclick=\"toggleLanguage()\">🌐 ${lang === \"zh\" ? \"English\" : \"中文\"}</button>\n  </div>\n\n  <div class=\"reply-display\">${reply}</div>\n\n  <div class=\"input-area\">\n    <input type=\"text\" id=\"textInput\" placeholder=\"${lang === \"zh\" ? \"说点什么吧~\" : \"Say something~\"}\" required /><br>\n    <button onclick=\"handleSend()\">${lang === \"zh\" ? \"发送\" : \"Send\"}</button>\n    <button type=\"button\" onclick=\"startRecognition()\">\n      🎤 ${lang === \"zh\" ? \"点我说话\" : \"Tap to Speak\"}\n    </button>\n  </div>\n\n  <script>\n    const lang = \"${lang}\";\n\n    function toggleLanguage() {\n      const url = new URL(window.location.href);\n      const newLang = lang === \"zh\" ? \"en\" : \"zh\";\n      url.searchParams.set(\"lang\", newLang);\n      window.location.href = url.toString();\n    }\n\n    function handleSend() {\n      const text = document.getElementById(\"textInput\").value;\n      if (!text) return;\n      const encoded = encodeURIComponent(text);\n      window.location.href = '/response?text=' + encoded + '&lang=' + lang;\n    }\n\n    function startRecognition() {\n      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;\n      if (!SpeechRecognition) {\n        alert(lang === \"zh\" ? \"你的浏览器不支持语音识别！\" : \"Your browser does not support speech recognition.\");\n        return;\n      }\n\n      const recognition = new SpeechRecognition();\n      recognition.lang = lang === \"zh\" ? \"zh-CN\" : \"en-US\";\n      recognition.interimResults = false;\n      recognition.maxAlternatives = 1;\n\n      recognition.onresult = function(event) {\n        const transcript = event.results[0][0].transcript;\n        document.getElementById(\"textInput\").value = transcript;\n      };\n\n      recognition.onerror = function(event) {\n        console.error(\"Speech recognition error:\", event.error);\n      };\n\n      recognition.start();\n    }\n  </script>\n</body>\n</html>\n`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 420,
+        "wires": [
+            [
+                "c16a99b009119036"
+            ]
+        ]
+    }
+]
